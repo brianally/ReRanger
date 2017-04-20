@@ -78,16 +78,16 @@ class ReRanger {
    * @param string  $sd   character(s) separating page numbers, eg. ", "
    * @param string  $rd   character(s) separating page numbers in range,
    *                      eg. "-", "--", ".."
-   * @param int     $inc  number of pages to increment (negative for decrement)
+   * @param string  $rs   reference/notes append, eg. 505(n), 432(r), etc.
    * @param int     $min  page number ABOVE which all other pages
    *                      should be incremented/decremented
-   * @param string  $rs   reference/notes append, eg. 505(n), 432(r), etc.
+   * @param int     $inc  number of pages to increment (negative for decrement)
    *
    * @return  void
    * 
    * @access  public
    */
-  public function __construct($sd, $rd, $inc, $min = 0, $rs = "") {
+  public function __construct($sd, $rd, $inc, $min = 1, $rs = "") {
     $this->_series_delimiter = $sd;
     $this->_range_delimiter  = $rd;
     $this->_increment        = intval($inc);
@@ -99,7 +99,7 @@ class ReRanger {
 
 
   /**
-   * Splits a number series and handles each member
+   * splits a number series and handles each member
    *
    * Given a string, "45, 64, 178" the series delimiter would be ", "
    * Ranges should be separated by the given range delimiter,
@@ -111,6 +111,9 @@ class ReRanger {
    * @param   string  $strNums delimited series of numbers
    * 
    * @return  string 
+   * 
+   * @throws  Exception if the series string contains a typo,
+   *          such as a missing number
    *
    * @access  public
    */
@@ -122,6 +125,10 @@ class ReRanger {
       // assume no reference string
       $ref   = "";
       $chunk = trim($chunk);
+
+      if ( !strlen($chunk) ) {
+      	throw new Exception("bad number series: ${strNums}");
+      }
 
       // save reference append if exists
       if ( substr_compare($chunk, $this->_reference_string, $this->_ref_len) === 0 ) {
@@ -151,8 +158,8 @@ class ReRanger {
 
 
   /**
-   * Splits a range, individually increments each part,
-   * then collapses both into a range again.
+   * splits a range, individually increments each part,
+   * then collapses both into a range again
    *
    * If the range delimiter is, eg. ".."
    * then a range looks like "82..8", or "239..43", etc.
@@ -212,10 +219,12 @@ class ReRanger {
 
 
   /**
-   * increment a single number
+   * increments a single number
    *
-   * @param  string   $input  if this is not a valid number will
-   *                          be returned unchanged
+   * If the input is not a valid number it will
+   * be returned unchanged.
+   *
+   * @param  string   $input  
    *                          
    * @return string
    *
@@ -239,8 +248,9 @@ class ReRanger {
 
 
   /**
-   * Add leading digits from first part of range
-   * to the beginning of ending part.
+   * adds leading digits from first part of range
+   * to the beginning of ending part
+   * 
    * eg. 73..9 => 79; 225..36 => 236
    * 
    * If both parts have equal length, return $end as is
@@ -275,9 +285,16 @@ class ReRanger {
 
 
   /**
-   * Remove leading digit on end if same as start, unless 1,
-   * discounting first digit on start if length is longer.
-   * If $end is negative, normalise it according to nearest
+   * removes leading digit(s) from range end
+   * 
+   * Will remove leading digits from $end, teths or higher,
+   * if they correspond to those from $start, unless that digit
+   * is 1, which is a special case. eg.
+   *
+   * incorrect: 512..4
+   * correct: 512..14
+   * 
+   * If $end is negative, normalise it according to nearest.
    * 
    * @param   string  $start
    * @param   string  $end
@@ -302,13 +319,10 @@ class ReRanger {
         $debugS[] = array_shift($aStart);
       }
 
-      // shift leading digits if they match in value UNLESS
-      // it is "1" which is a special case.
-      // eg.
-      // 512..4   incorrect
-      // 512..14  correct
+      // shift leading digits if they match in value
       while ( $aStart[0] === $aEnd[0] ) {
 
+      	// skip if tenths special case
         if ( $aStart[0] === "1" && sizeof($aStart) == 2 ) {
           break;
         }
