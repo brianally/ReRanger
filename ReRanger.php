@@ -197,6 +197,11 @@ class ReRanger {
     // fill out $end with leading digits of $start
     $end = $this->expandRangeEnd($start, $end);
 
+    // sanity
+    if ( intval($end) <= intval($start) ) {
+    	throw new Exception("bad range: ${start} to ${end}");
+    }
+
     $start = $this->step($start);
     $end   = $this->step($end);
 
