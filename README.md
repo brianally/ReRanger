@@ -40,7 +40,7 @@ list back together.
 (The pipe will become an en-space when the typesetting is done. The double
 dashes will be changed to en-dashes.)
 
-But some numbers are ranges (eg. 32--5, 230--21) which make this a challenge.
+But some numbers are ranges (eg. 32--5, 230--41) which make this a challenge.
 The second part of the range must be expanded before the number can be
 incremented/decremented.
 
