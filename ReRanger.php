@@ -60,7 +60,7 @@
  * c) I have no pressing need for that right now.
  * 
  * @author    brian ally
- * @link      https://gist.github.com/brianally
+ * @link      https://github.com/brianally/ReRanger
  * @copyright MIT
  */
 class ReRanger {
