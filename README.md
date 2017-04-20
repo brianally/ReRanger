@@ -11,23 +11,23 @@ of the book.
 
 Index entries look something like:
 
-AAFM (see Association of Air Force Missileers)
-ABM (see Anti-Ballistic Missile)
-AEC (see Atomic Energy Commission)
-AFOSI (see Air Force Office of Special Investigations)
-AFR 200-2|158, 225
-AFR 35-99|156
-AFSWC (see Armed Forces Special Weapons Command)
-Aiken Air Force Station (South Carolina)|47, 127
-Air Force Office of Special Investigations (AFOSI, OSI)|11, 51, 53--4, 144,
-148, 230--1, 236, 244, 327, 260, 271, 295, 314, 325--7, 329, 337--41, 383,
-393, 399, 412, 418, 422, 437--8, 528(r)
-Air Force Weapons Laboratory|208--9, 302
-Air Institute of Technology|33
-Air Intelligence Requirements Division (AIRD)|33, 487
-Air Materiel Command (AMC)|33, 330, 487, 528(r)
-Alamogordo, New Mexico|52, 60, 91, 470, 530(r)
-...
+AAFM (see Association of Air Force Missileers)  
+ABM (see Anti-Ballistic Missile)  
+AEC (see Atomic Energy Commission)  
+AFOSI (see Air Force Office of Special Investigations)  
+AFR 200-2|158, 225  
+AFR 35-99|156  
+AFSWC (see Armed Forces Special Weapons Command)  
+Aiken Air Force Station (South Carolina)|47, 127  
+Air Force Office of Special Investigations (AFOSI, OSI)|11, 51, 53--4, 144,  
+148, 230--1, 236, 244, 327, 260, 271, 295, 314, 325--7, 329, 337--41, 383,  
+393, 399, 412, 418, 422, 437--8, 528(r)  
+Air Force Weapons Laboratory|208--9, 302  
+Air Institute of Technology|33  
+Air Intelligence Requirements Division (AIRD)|33, 487  
+Air Materiel Command (AMC)|33, 330, 487, 528(r)  
+Alamogordo, New Mexico|52, 60, 91, 470, 530(r)  
+...  
 
 As should be apparent, not all entries have page numbers. Also, some lines
 will be empty. These will be passed through unchanged.
