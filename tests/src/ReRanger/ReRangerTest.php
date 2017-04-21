@@ -1,18 +1,16 @@
 <?php
 use ReRanger\ReRanger;
 
-class ReRangerTest extends \PHPUnit_Framework_TestCase
-{
-	public function incrementedNumberProvider()
-	{
+class ReRangerTest extends \PHPUnit_Framework_TestCase {
+
+	public function incrementedNumberProvider() {
 		return [
 			[", ", "--", 6, "52", "58"],
 			[", ", "--", -2, "91", "89"]
 		];
 	}
 
-	public function expandRangeEndProvider()
-	{
+	public function expandRangeEndProvider() {
 		return [
 			[", ", "--", 1, "91", "8", "98"],
 			[", ", "--", 1, "29", "38", "38"],
@@ -20,8 +18,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function collapseRangeEndProvider()
-	{
+	public function collapseRangeEndProvider() {
 		return [
 			[", ", "--", 1, "32", "38", "8"],
 			[", ", "--", 1, "45", "68", "68"],
@@ -29,8 +26,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function multipleIncrementedNumbersProvider()
-	{
+	public function multipleIncrementedNumbersProvider() {
 		return [
 			[", ", "--", 4, "92, 106", "96, 110"],
 			[", ", "--", 3, "23, 28, 44, 91", "26, 31, 47, 94"],
@@ -38,8 +34,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function incrementedRangeProvider()
-	{
+	public function incrementedRangeProvider() {
 		return [
 			[", ", "--", 8, "32--8", "40--6"],
 			[", ", "--", 12, "51--63", "63--75"],
@@ -50,8 +45,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function multipleIncrementedRangesProvider()
-	{
+	public function multipleIncrementedRangesProvider() {
 		return [
 			[", ", "--", 8, "32--8, 41--5", "40--6, 49--53"],
 			[", ", "--", 12, "51--63, 122--31", "63--75, 134--43"],
@@ -62,8 +56,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function referencesProvider()
-	{
+	public function referencesProvider() {
 		return [
 			[", ", "--", 8, 1, "(r)", "523(r)", "531(r)"],
 			[", ", "--", 8, 1, "(n)", "523(n), 544--6(n)", "531(n), 552--4(n)"],
@@ -71,8 +64,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function minPagesProvider()
-	{
+	public function minPagesProvider() {
 		return [
 			[", ", "--", 2, 50, "32, 45, 51, 129", "32, 45, 53, 131"],
 			[", ", "--", 2, 50, "32, 45, 129", "32, 45, 131"],
@@ -91,8 +83,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 		];
 	}
 
-	public function badSeriesProvider()
-	{
+	public function badSeriesProvider() {
 		return [
 			[", ", "--", 1, 1, "92, , 106"],
 			[", ", "--", 1, 1, "92,, 106"],
@@ -110,8 +101,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::step
 	 * @dataProvider incrementedNumberProvider
 	 */
-	public function testStepReturnsIncrementedNumber($sd, $rd, $inc, $input, $expected)
-	{
+	public function testStepReturnsIncrementedNumber($sd, $rd, $inc, $input, $expected) {
 
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
@@ -123,8 +113,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::expandRangeEnd
 	 * @dataProvider expandRangeEndProvider
 	 */
-	public function testExpandRangeEnd($sd, $rd, $inc, $a, $b, $expected)
-	{
+	public function testExpandRangeEnd($sd, $rd, $inc, $a, $b, $expected) {
 
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
@@ -136,8 +125,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::collapseRangeEnd
 	 * @dataProvider collapseRangeEndProvider
 	 */
-	public function testCollapseRangeEnd($sd, $rd, $inc, $a, $b, $expected)
-	{
+	public function testCollapseRangeEnd($sd, $rd, $inc, $a, $b, $expected) {
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
 		$this->assertEquals( $expected, $reRanger->collapseRangeEnd($a, $b) );
@@ -148,8 +136,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider multipleIncrementedNumbersProvider
 	 */
-	public function testProcessSeriesReturnsMultipleIncrementedNumbers($sd, $rd, $inc, $input, $expected)
-	{
+	public function testProcessSeriesReturnsMultipleIncrementedNumbers($sd, $rd, $inc, $input, $expected) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
@@ -160,8 +148,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider incrementedRangeProvider
 	 */
-	public function testProcessSeriesReturnsIncrementedRange($sd, $rd, $inc, $input, $expected)
-	{
+	public function testProcessSeriesReturnsIncrementedRange($sd, $rd, $inc, $input, $expected) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
@@ -172,8 +160,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider multipleIncrementedRangesProvider
 	 */
-	public function testProcessSeriesReturnsMultipleIncrementedRanges($sd, $rd, $inc, $input, $expected)
-	{
+	public function testProcessSeriesReturnsMultipleIncrementedRanges($sd, $rd, $inc, $input, $expected) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
@@ -184,8 +172,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider referencesProvider
 	 */
-	public function testProcessSeriesHandlesReferences($sd, $rd, $inc, $min, $ref, $input, $expected)
-	{
+	public function testProcessSeriesHandlesReferences($sd, $rd, $inc, $min, $ref, $input, $expected) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc, $min, $ref);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
@@ -196,8 +184,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider minPagesProvider
 	 */
-	public function testProcessSeriesIgnoresMinPages($sd, $rd, $inc, $min, $input, $expected)
-	{
+	public function testProcessSeriesIgnoresMinPages($sd, $rd, $inc, $min, $input, $expected) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
@@ -209,8 +197,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @dataProvider badIntProvider
 	 * @expectedException	InvalidArgumentException
 	 */
-	public function testStepExceptsOnBadInput($sd, $rd, $inc, $min, $input)
-	{
+	public function testStepExceptsOnBadInput($sd, $rd, $inc, $min, $input) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 		$reRanger->step($input);
 	}
@@ -221,8 +209,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @dataProvider badSeriesProvider
 	 * @expectedException	InvalidArgumentException
 	 */
-	public function testProcessSeriesExceptsOnBadSeries($sd, $rd, $inc, $min, $input)
-	{
+	public function testProcessSeriesExceptsOnBadSeries($sd, $rd, $inc, $min, $input) {
+
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 		$reRanger->processSeries($input);
 	}
@@ -233,8 +221,8 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @dataProvider badReferenceProvider
 	 * @expectedException	InvalidArgumentException
 	 */
-	public function testProcessSeriesExceptsOnBadReference($sd, $rd, $inc, $min, $ref, $input)
-	{
+	public function testProcessSeriesExceptsOnBadReference($sd, $rd, $inc, $min, $ref, $input) {
+		
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 		$reRanger->processSeries($input);
 	}
