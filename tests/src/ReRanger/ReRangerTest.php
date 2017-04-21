@@ -1,12 +1,4 @@
 <?php
-
-// 52, 60, 91--8, 472--85, 532(r), 544--6(r)
-// 52
-// 52, 60
-// 91--8
-// 91--8, 472--85
-// 532(r), 544--6(r)
-
 use ReRanger\ReRanger;
 
 class ReRangerTest extends \PHPUnit_Framework_TestCase
@@ -86,6 +78,16 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 			[", ", "--", 2, 50, "32, 45, 129", "32, 45, 131"],
 			[", ", "--", 2, 50, "32, 45, 48--51, 129", "32, 45, 48--50, 53, 131"],
 			[", ", "--", -2, 50, "32, 45, 129", "32, 45, 127"]
+		];
+	}
+
+	public function badIntProvider() {
+		return [
+			[", ", "--", 8, 1, "foo"],
+			[", ", "--", 8, 1, "3foo"],
+			[", ", "--", 8, 1, "foo5"],
+			[", ", "--", 8, 1, ""],
+			[", ", "--", 8, 1, true]
 		];
 	}
 
@@ -203,6 +205,18 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	
 
 	/**
+	 * @covers	ReRanger::step
+	 * @dataProvider badIntProvider
+	 * @expectedException	InvalidArgumentException
+	 */
+	public function testStepExceptsOnBadInput($sd, $rd, $inc, $min, $input)
+	{
+		$reRanger = new ReRanger($sd, $rd, $inc, $min);
+		$reRanger->step($input);
+	}
+	
+
+	/**
 	 * @covers	ReRanger::processSeries
 	 * @dataProvider badSeriesProvider
 	 * @expectedException	InvalidArgumentException
@@ -210,7 +224,6 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	public function testProcessSeriesExceptsOnBadSeries($sd, $rd, $inc, $min, $input)
 	{
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
-
 		$reRanger->processSeries($input);
 	}
 	
@@ -220,10 +233,9 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase
 	 * @dataProvider badReferenceProvider
 	 * @expectedException	InvalidArgumentException
 	 */
-	public function testProcessSeriesBadReference($sd, $rd, $inc, $min, $ref, $input)
+	public function testProcessSeriesExceptsOnBadReference($sd, $rd, $inc, $min, $ref, $input)
 	{
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
-
 		$reRanger->processSeries($input);
 	}
 }

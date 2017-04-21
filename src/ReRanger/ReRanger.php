@@ -352,22 +352,20 @@ class ReRanger {
    * 
    * @return  string  modified end
    * 
-   * @throws  Exception if the numbers in the range are not sane
+   * @throws  InvalidArgumentException if the numbers in the range are not sane
    *
    * @access  public
    */
   public function collapseRangeEnd($start, $end) {
     $aStart = str_split($start);
     $aEnd   = str_split($end);
-    $debugS = $debugE = []; // capture shifted values in case things go south
-
 
     if ( sizeof($aStart) > 1 && sizeof($aStart) >= sizeof($aEnd) ) {
 
       // shift leading digits off start until the two
-      // have the same number of them
+      // arrays have the same number of them
       while ( sizeof($aStart) != sizeof($aEnd) ) {
-        $debugS[] = array_shift($aStart);
+        array_shift($aStart);
       }
 
       // shift leading digits if they match in value
@@ -378,24 +376,16 @@ class ReRanger {
           break;
         }
 
-        $debugS[] = array_shift($aStart);
-        $debugE[] = array_shift($aEnd);
+        array_shift($aStart);
+        array_shift($aEnd);
 
         if ( $aStart[0] === "0" && $aStart[0] !== $aEnd[0] ) {
           break;
         }
 
         // wot?!
-        if ( empty($aStart) || empty($aEnd) ) {
-          $message = ["Something's not right with this!"];
-          $message[] = "start: " . $start;
-          $message[] = "end: " . $end;
-          $message[] = print_r($debugS, true);
-          $message[] = print_r($debugE, true);
-          $message[] = print_r($aStart, true);
-          $message[] = print_r($aEnd, true);
-          
-          throw new Exception( implode(PHP_EOL, $message) );
+        if ( empty($aStart) || empty($aEnd) ) {          
+          throw new InvalidArgumentException("Range doesn't collapse nicely: ${start}, ${end}");
         }
       }
     }
