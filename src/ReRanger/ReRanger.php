@@ -1,6 +1,7 @@
 <?php
 namespace ReRanger;
 
+use \InvalidArgumentException as InvalidArgumentException;
 use \Exception as Exception;
 
 /**
@@ -142,7 +143,7 @@ class ReRanger {
    * 
    * @return  string 
    * 
-   * @throws  Exception if the series string contains a typo,
+   * @throws  InvalidArgumentException if the series string contains a typo,
    *          such as a missing number
    *
    * @access  public
@@ -158,7 +159,7 @@ class ReRanger {
       $chunk = trim($chunk);
 
       if ( !strlen($chunk) ) {
-      	throw new Exception("bad number series: ${strNums}");
+      	throw new InvalidArgumentException("bad number series: ${strNums}");
       }
 
       // save reference append if exists
@@ -169,16 +170,22 @@ class ReRanger {
 
       }
 
-      // is range? eg. 231-44
-      if ( stristr($chunk, $this->_range_delimiter) !== FALSE ) {
+      try {
+	      // is range? eg. 231-44
+	      if ( stristr($chunk, $this->_range_delimiter) !== FALSE ) {
 
-        $chunk = $this->processRange($chunk);
+	        $chunk = $this->processRange($chunk);
 
-      } else {
+	      } else {
 
-        $chunk = $this->step($chunk);
+	        $chunk = $this->step($chunk);
 
-      }
+	      }
+	    }
+	    catch(InvalidArgumentException $e) {
+	    	// prefer to send the entire series back up
+	    	throw new InvalidArgumentException("bad number series: ${strNums}", 0, $e);
+	    }
 
       $out[] = "${chunk}${ref}";
 
@@ -199,8 +206,8 @@ class ReRanger {
    * 
    * @return  string 
    * 
-   * @throws  Exception if the string does not contain the range delimiter 
-   *                    or there are multiple instances
+   * @throws  InvalidArgumentException if the string does not
+   *          contain the range delimiter exactly once, or some other typo
    *
    * @access  public
    */
@@ -208,7 +215,7 @@ class ReRanger {
     $parts = explode($this->_range_delimiter, $range);
 
     if ( sizeof($parts) !== 2 ) {
-      throw new Exception("bad range: ${range}");
+      throw new InvalidArgumentException("bad range: ${range}");
     }
 
     // sanity
@@ -223,8 +230,8 @@ class ReRanger {
         return $start . $this->_range_delimiter . $end;
 
       } else if ( intval($end) > $this->_min_page ) {
-
-        // edge case: second number could be arabic
+      	// way out on the edge case: second number could be arabic
+        
         $end = $this->step($end);
 
         return $start . $this->_range_delimiter . $end;
@@ -237,7 +244,7 @@ class ReRanger {
     // sanity
     if ( intval($end) <= intval($start) ) {
     	echo "bad range: ${start} to ${end}";
-    	throw new Exception("bad range: ${start} to ${end}");
+    	throw new InvalidArgumentException("bad range: ${start} to ${end}");
     }
 
     // does the addition/subtraction fall within this range?
@@ -245,7 +252,7 @@ class ReRanger {
 
     	// removing pages from within a range is problematic
     	if ( $this->_increment < 0 ) {
-    		throw new Exception("Cannot remove pages from with range: ${range}");
+    		throw new InvalidArgumentException("Cannot remove pages from with range: ${range}");
     	}
 
     	return $this->splitRange($start, $end);
@@ -266,16 +273,18 @@ class ReRanger {
    * If the input is not a valid number it will
    * be returned unchanged.
    *
-   * @param  string   $input  
+   * @param		string   $input  
    *                          
-   * @return string
+   * @return	string
    *
+   * @throws  InvalidArgumentException if the string is not numeric
+   * 
    * @access  public
    */
   public function step($input) {
 
     if ( !is_numeric($input) ) {
-      return $input;
+      throw new InvalidArgumentException("bad number: ${input}");
     }
 
     $num = intval($input);

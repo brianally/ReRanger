@@ -6,7 +6,9 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	stopOnFailures="false"
-	syntaxCheck="false">
+	syntaxCheck="false"
+	mapTestClassNameToCoveredClassName="true"
+	forceCoversAnnotation="true">
     <testsuites>
         <testsuite name="ReRanger Test Suite">
             <directory>tests</directory>
