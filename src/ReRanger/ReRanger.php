@@ -257,9 +257,9 @@ class ReRanger {
    *                          
    * @return string
    *
-   * @access  private
+   * @access  public
    */
-  private function step($input) {
+  public function step($input) {
 
     if ( !is_numeric($input) ) {
       return $input;
@@ -293,9 +293,9 @@ class ReRanger {
    * 
    * @return string modified end
    *
-   * @access  private
+   * @access  public
    */
-  private function expandRangeEnd($start, $end) {
+  public function expandRangeEnd($start, $end) {
     $aStart = array_reverse( str_split($start) );
     $aEnd   = array_reverse( str_split($end) );
 
@@ -332,9 +332,9 @@ class ReRanger {
    * 
    * @throws  Exception if the numbers in the range are not sane
    *
-   * @access  private
+   * @access  public
    */
-  private function collapseRangeEnd($start, $end) {
+  public function collapseRangeEnd($start, $end) {
     $aStart = str_split($start);
     $aEnd   = str_split($end);
     $debugS = $debugE = []; // capture shifted values in case things go south

@@ -11,7 +11,7 @@ use ReRanger\ReRanger;
 
 class ReRangerTest extends \PHPUnit_Framework_TestCase {
 	
-	public function testProcessSeriesReturnsIncrementedNumber() {
+	public function testStepReturnsIncrementedNumber() {
 		$input            = "52";
 		$series_delimiter = ", ";
 		$range_delimiter  = "--";
@@ -21,10 +21,10 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 
 		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment, $min_page);
 
-		$this->assertEquals( $expected, $reRanger->processSeries($input) );
+		$this->assertEquals( $expected, $reRanger->step($input) );
 	}
 	
-	public function testProcessSeriesReturnsDecrementedNumber() {
+	public function testStepReturnsDecrementedNumber() {
 		$input            = "52";
 		$series_delimiter = ", ";
 		$range_delimiter  = "--";
@@ -33,6 +33,45 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 		$expected         = "50";
 
 		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment, $min_page);
+
+		$this->assertEquals( $expected, $reRanger->step($input) );
+	}
+
+	public function testExpandRangeEnd() {
+		$input1           = "91";
+		$input2           = "8";
+		$series_delimiter = ", ";
+		$range_delimiter  = "--";
+		$increment        = 1;
+		$expected         = "98";
+
+		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment);
+
+		$this->assertEquals( $expected, $reRanger->expandRangeEnd($input1, $input2) );
+	}
+
+	public function testCollapseRangeEnd() {
+		$input1           = "105";
+		$input2           = "124";
+		$series_delimiter = ", ";
+		$range_delimiter  = "--";
+		$increment        = 1;
+		$expected         = "24";
+
+		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment);
+
+		$this->assertEquals( $expected, $reRanger->collapseRangeEnd($input1, $input2) );
+	}
+
+	public function testProcessSeriesReturnsMultipleIncrementedNumbers() {
+		$input            = "52, 129";
+		$series_delimiter = ", ";
+		$range_delimiter  = "--";
+		$min_page         = 1;
+		$increment        = 2;
+		$expected         = "54, 131";
+
+		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
 	}
@@ -44,6 +83,19 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 		$min_page         = 1;
 		$increment        = -2;
 		$expected         = "50, 58";
+
+		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment);
+
+		$this->assertEquals( $expected, $reRanger->processSeries($input) );
+	}
+
+	public function testProcessSeriesReturnsIncrementedRange() {
+		$input            = "91--9";
+		$series_delimiter = ", ";
+		$range_delimiter  = "--";
+		$min_page         = 1;
+		$increment        = 2;
+		$expected         = "93--101";
 
 		$reRanger = new ReRanger($series_delimiter, $range_delimiter, $increment, $min_page);
 
