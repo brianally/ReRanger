@@ -405,10 +405,21 @@ class ReRanger {
 
   /**
    * splits a range into two separate ones, with x pages between
+   *
+   * If the point at which incrementing should occur (min_page)
+   * falls within an existing range, the range must be split. The
+   * first will run from the start of the original range up to
+   * min_page. If start === min_page then it is returned as an
+   * ordinary number, after stepping.
+   * 
+   * The second part of the range will run from (min_page + 1) to end
+   * and then processed, unless end is only one more thean min_page,
+   * in which case it is also stepped as an ordinary number.
    * 
    * @param  string $start beginning of range
    * @param  string $end   end of range
-   * @return string        the two ranges
+   * @return string        the two ranges or numbers, combined by
+   *                       the series delimiter
    */
   public function splitRange($start, $end) {
   	$series = [];
