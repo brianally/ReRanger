@@ -187,7 +187,7 @@ class ReRanger {
 
 
   /**
-   * splits a range, individually increments each part,
+   * expands a range, individually increments each part,
    * then collapses both into a range again
    *
    * If the range delimiter is, eg. ".."
@@ -212,7 +212,6 @@ class ReRanger {
     // sanity
     $start = $parts[0];
     $end   = $parts[1];
-
 
     // could be roman numerals from prelim
     if ( !is_numeric($start) ) {
