@@ -75,8 +75,10 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 
 	public function minPagesProvider() {
 		return [
-			[", ", "--", 2, 50, "(r)", "32, 45, 51, 129", "32, 45, 53, 131"],
-			[", ", "--", 2, 50, "(r)", "32, 45, 49--51, 129", "32, 45, 49--53, 131"]
+			[", ", "--", 2, 50, "32, 45, 51, 129", "32, 45, 53, 131"],
+			[", ", "--", 2, 50, "32, 45, 129", "32, 45, 131"],
+			[", ", "--", 2, 50, "32, 45, 48--51, 129", "32, 45, 48--50, 53, 131"],
+			[", ", "--", -2, 50, "32, 45, 129", "32, 45, 127"]
 		];
 	}
 	
@@ -160,10 +162,10 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider minPagesProvider
 	 */
-	public function testProcessSeriesIgnoresMinPages($sd, $rd, $inc, $min, $ref, $input, $expected) {
+	public function testProcessSeriesIgnoresMinPages($sd, $rd, $inc, $min, $input, $expected) {
 
 
-		$reRanger = new ReRanger($sd, $rd, $inc, $min, $ref);
+		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 
 		$this->assertEquals( $expected, $reRanger->processSeries($input) );
 	}

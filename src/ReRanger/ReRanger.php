@@ -1,6 +1,8 @@
 <?php
 namespace ReRanger;
 
+use \Exception as Exception;
+
 /**
  * ReRanger
  * 
@@ -234,7 +236,19 @@ class ReRanger {
 
     // sanity
     if ( intval($end) <= intval($start) ) {
+    	echo "bad range: ${start} to ${end}";
     	throw new Exception("bad range: ${start} to ${end}");
+    }
+
+    // does the addition/subtraction fall within this range?
+    if ( intval($start) <= $this->_min_page &&  $this->_min_page < intval($end) ) {
+
+    	// removing pages from within a range is problematic
+    	if ( $this->_increment < 0 ) {
+    		throw new Exception("Cannot remove pages from with range: ${range}");
+    	}
+
+    	return $this->splitRange($start, $end);
     }
 
     $start = $this->step($start);
@@ -377,6 +391,39 @@ class ReRanger {
       }
     }
     return implode("", $aEnd);
+  }
+
+
+  /**
+   * splits a range into two separate ones, with x pages between
+   * 
+   * @param  string $start beginning of range
+   * @param  string $end   end of range
+   * @return string        the two ranges
+   */
+  public function splitRange($start, $end) {
+  	$series = [];
+  	$ranges = [];
+
+  	// start is the same as min page; make standalone number
+  	if ( intval($start) === $this->_min_page ) {
+  		$series[] = $start;
+  	}
+  	else {
+			$range    = $start . $this->_range_delimiter . strval($this->_min_page);
+			$series[] = $this->processRange($range);
+  	}
+
+  	// end only one more than min_page; make standalone number after stepping
+  	if ( intval($end) - $this->_min_page === 1 ) {
+  		$series[] = $this->step($end);
+  	}
+  	else {
+			$range    = strval($this->_min_page + 1). $this->_range_delimiter . $end;
+			$series[] = $this->processRange($range);
+  	}
+
+  	return implode($this->_series_delimiter, $series);
   }
 
 }
