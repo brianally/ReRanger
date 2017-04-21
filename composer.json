@@ -1,0 +1,13 @@
+{
+		"name": "re-ranger/re-ranger",
+		"description": "A utility for renumbering book manuscript index page ranges",
+		"license": "MIT",
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.0"
+    },
+    "autoload": {
+    	"psr-0": {"ReRanger\\": "src/"}
+    }
+}

@@ -1,4 +1,5 @@
 <?php
+namespace ReRanger;
 
 /**
  * ReRanger
@@ -61,40 +62,67 @@
  * 
  * @author    brian ally
  * @link      https://github.com/brianally/ReRanger
- * @copyright MIT
+ * @license   MIT http://opensource.org/licenses/MIT
  */
 class ReRanger {
 
+	/**
+	 * character(s) separating page numbers, eg. ", "
+	 * 
+	 * @var string
+	 */
   private $_series_delimiter;
+
+  /**
+   * character(s) separating page numbers in range,
+   * eg. "-", "--", ".."
+   * 
+   * @var string
+   */
   private $_range_delimiter;
-  private $_reference_string;
-  private $_ref_len;
-  private $_min_page;
+
+  /**
+   * number of pages to increment (negative for decrement)
+   * 
+   * @var int
+   */
   private $_increment;
+
+  /**
+   * page number ABOVE which all other pages
+   * should be incremented/decremented
+   * 
+   * @var int
+   */
+  private $_min_page;
+
+  /**
+   * reference/notes append, eg. 505(n), 432(r), etc.
+   * 
+   * @var string
+   */
+  private $_reference_string;
+
 
   /**
    * constructor
    * 
-   * @param string  $sd   character(s) separating page numbers, eg. ", "
-   * @param string  $rd   character(s) separating page numbers in range,
-   *                      eg. "-", "--", ".."
-   * @param string  $rs   reference/notes append, eg. 505(n), 432(r), etc.
-   * @param int     $min  page number ABOVE which all other pages
-   *                      should be incremented/decremented
-   * @param int     $inc  number of pages to increment (negative for decrement)
+   * @param string  $sd
+   * @param string  $rd
+   * @param string  $rs
+   * @param int     $min
+   * @param int     $inc
    *
    * @return  void
    * 
    * @access  public
    */
-  public function __construct($sd, $rd, $inc, $min = 1, $rs = "") {
+  public function __construct($sd, $rd, $inc, $min = 0, $rs = "") {
     $this->_series_delimiter = $sd;
     $this->_range_delimiter  = $rd;
     $this->_increment        = intval($inc);
     $this->_min_page         = intval($min);
     $this->_reference_string = $rs;
-    // length of reference/note append string
-    $this->_ref_len          = strlen($this->_reference_string) * -1;
   }
 
 
@@ -118,8 +146,9 @@ class ReRanger {
    * @access  public
    */
   public function processSeries($strNums) {
-    $out = [];
-    $chunks = explode($this->_series_delimiter, $strNums);
+		$out     = [];
+		$ref_len = strlen($this->_reference_string) * -1;
+		$chunks  = explode($this->_series_delimiter, $strNums);
 
     foreach($chunks as $chunk) {
       // assume no reference string
@@ -131,10 +160,10 @@ class ReRanger {
       }
 
       // save reference append if exists
-      if ( substr_compare($chunk, $this->_reference_string, $this->_ref_len) === 0 ) {
+      if ( substr_compare($chunk, $this->_reference_string, $ref_len) === 0 ) {
 
         $ref   = $this->_reference_string;
-        $chunk = substr($chunk, 0, $this->_ref_len);
+        $chunk = substr($chunk, 0, $ref_len);
 
       }
 
