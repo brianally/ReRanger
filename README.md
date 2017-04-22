@@ -65,7 +65,7 @@ to do it with Python but, as I thought the process through, I kept thinking
 about how I would do it with PHP. As time was short, I simply did it this way.
 I may rewrite this in Python sometime as an exercise.
 
-### This class requires PHP 5.5+
+
 
 ## Example Usage
 
@@ -96,3 +96,5 @@ while( ($line = fgets($readPointer)) !== false ) {
   fwrite($writePointer, $line);
 }
 ```
+
+Or see [this gist](https://gist.github.com/brianally/67fda7e0ed40f71e5c4a003c7686acf9) for a fuller example.
