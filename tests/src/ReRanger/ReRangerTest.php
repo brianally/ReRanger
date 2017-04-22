@@ -73,6 +73,14 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function splitRangeProvider() {
+		return [
+			[", ", "--", 6, "50", "49", "54", "49--50, 57--60"],
+			[", ", "--", 6, "50", "50", "52", "50, 57--8"],
+			[", ", "--", 6, "50", "50", "51", "50, 57"]
+		];
+	}
+
 	public function badIntProvider() {
 		return [
 			[", ", "--", 8, 1, "foo"],
@@ -193,6 +201,18 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 	
 
 	/**
+	 * @covers	ReRanger::splitRange
+	 * @dataProvider splitRangeProvider
+	 */
+	public function testSplitRangeSplitsRanges($sd, $rd, $inc, $min, $a, $b, $expected) {
+
+		$reRanger = new ReRanger($sd, $rd, $inc, $min);
+
+		$this->assertEquals( $expected, $reRanger->splitRange($a, $b) );
+	}
+	
+
+	/**
 	 * @covers	ReRanger::step
 	 * @dataProvider badIntProvider
 	 * @expectedException	InvalidArgumentException
@@ -222,7 +242,7 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException	InvalidArgumentException
 	 */
 	public function testProcessSeriesExceptsOnBadReference($sd, $rd, $inc, $min, $ref, $input) {
-		
+
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 		$reRanger->processSeries($input);
 	}

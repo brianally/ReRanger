@@ -2,7 +2,6 @@
 namespace ReRanger;
 
 use \InvalidArgumentException as InvalidArgumentException;
-use \Exception as Exception;
 
 /**
  * ReRanger
@@ -62,6 +61,11 @@ use \Exception as Exception;
  * b) Manually adjusting prelim page numbers should be a snap unless you've got
  *    a ridiculously large prelim;
  * c) I have no pressing need for that right now.
+ *
+ * While looping through a list of index entries to process be sure to catch
+ * InvalidArgumentException so you can decide for yourself whether to continue 
+ * processing further lines. The exception message will provide the offending
+ * string so you can search for it in your source file.
  * 
  * @author    brian ally
  * @link      https://github.com/brianally/ReRanger
@@ -133,13 +137,13 @@ class ReRanger {
    * splits a number series and handles each member
    *
    * Given a string, "45, 64, 178" the series delimiter would be ", "
-   * Ranges should be separated by the given range delimiter,
+   * Ranges should be separated by the given range delimiter ("..", "--", etc.)
    * ie. "45..9" represents "45 to 49", "53..78" is "53 to 78", etc.
    *
    * A mixed series contains both single numbers and ranges, eg.
    * "23, 27, 35..7, 39, 52..5"
    *
-   * @param   string  $strNums delimited series of numbers
+   * @param   string  $strSeries delimited series of numbers
    * 
    * @return  string 
    * 
@@ -148,10 +152,10 @@ class ReRanger {
    *
    * @access  public
    */
-  public function processSeries($strNums) {
-		$out     = [];
-		$ref_len = strlen($this->_reference_string) * -1;
-		$chunks  = explode($this->_series_delimiter, $strNums);
+  public function processSeries($strSeries) {
+		$processed = [];
+		$ref_len   = strlen($this->_reference_string) * -1;
+		$chunks    = explode($this->_series_delimiter, $strSeries);
 
     foreach($chunks as $chunk) {
       // assume no reference string
@@ -159,7 +163,7 @@ class ReRanger {
       $chunk = trim($chunk);
 
       if ( !strlen($chunk) ) {
-      	throw new InvalidArgumentException("bad number series: ${strNums}");
+      	throw new InvalidArgumentException("bad number series: ${strSeries}");
       }
 
       // save reference append if exists
@@ -183,15 +187,15 @@ class ReRanger {
 	      }
 	    }
 	    catch(InvalidArgumentException $e) {
-	    	// prefer to send the entire series back up
-	    	throw new InvalidArgumentException("bad number series: ${strNums}", 0, $e);
+	    	// catch, wrap, and re-throw so we can send the entire series back up
+	    	throw new InvalidArgumentException("bad number series: ${strSeries}", 0, $e);
 	    }
 
-      $out[] = "${chunk}${ref}";
+      $processed[] = "${chunk}${ref}";
 
     }
 
-    return implode($this->_series_delimiter, $out);
+    return implode( $this->_series_delimiter, $processed );
   }
 
 
@@ -255,6 +259,7 @@ class ReRanger {
     		throw new InvalidArgumentException("Cannot remove pages from with range: ${range}");
     	}
 
+    	// gap this range
     	return $this->splitRange($start, $end);
     }
 
@@ -269,9 +274,6 @@ class ReRanger {
 
   /**
    * increments a single number
-   *
-   * If the input is not a valid number it will
-   * be returned unchanged.
    *
    * @param		string   $input  
    *                          
@@ -338,7 +340,7 @@ class ReRanger {
   /**
    * removes leading digit(s) from range end
    * 
-   * Will remove leading digits from $end, teths or higher,
+   * Will remove leading digits from $end, tenths or higher,
    * if they correspond to those from $start, unless that digit
    * is 1, which is a special case. eg.
    *
@@ -363,7 +365,7 @@ class ReRanger {
     if ( sizeof($aStart) > 1 && sizeof($aStart) >= sizeof($aEnd) ) {
 
       // shift leading digits off start until the two
-      // arrays have the same number of them
+      // arrays are the same size
       while ( sizeof($aStart) != sizeof($aEnd) ) {
         array_shift($aStart);
       }
@@ -372,20 +374,20 @@ class ReRanger {
       while ( $aStart[0] === $aEnd[0] ) {
 
       	// skip if tenths special case
-        if ( $aStart[0] === "1" && sizeof($aStart) == 2 ) {
+        if ( sizeof($aStart) == 2 && $aStart[0] === "1" ) {
           break;
         }
 
         array_shift($aStart);
         array_shift($aEnd);
 
-        if ( $aStart[0] === "0" && $aStart[0] !== $aEnd[0] ) {
-          break;
-        }
-
         // wot?!
         if ( empty($aStart) || empty($aEnd) ) {          
           throw new InvalidArgumentException("Range doesn't collapse nicely: ${start}, ${end}");
+        }
+
+        if ( $aStart[0] === "0" && $aStart[0] !== $aEnd[0] ) {
+          break;
         }
       }
     }
@@ -394,20 +396,24 @@ class ReRanger {
 
 
   /**
-   * splits a range into two separate ones, with x pages between
+   * splits a range into two, with x pages between
    *
    * If the point at which incrementing should occur (min_page)
    * falls within an existing range, the range must be split. The
    * first will run from the start of the original range up to
-   * min_page. If start === min_page then it is returned as an
-   * ordinary number, after stepping.
+   * min_page, inclusive. If start === min_page then it is returned
+   * as an ordinary number, after stepping.
    * 
    * The second part of the range will run from (min_page + 1) to end
    * and then processed, unless end is only one more thean min_page,
    * in which case it is also stepped as an ordinary number.
+   *
+   * The two halves are then concatenated with the series delimiter
+   * and returned.
    * 
    * @param  string $start beginning of range
    * @param  string $end   end of range
+   * 
    * @return string        the two ranges or numbers, combined by
    *                       the series delimiter
    */
