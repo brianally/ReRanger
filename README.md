@@ -52,19 +52,15 @@ Also, some numbers may have a string appended to denote that the page is in the
 notes or references, eg. "n", "[n]", "(r)"
 
 Finally, some numbers may be in roman numerals. While these are considered,
-they are not yet handled. However, in the unlikely case that an index range
-begins with roman and ends with arabic, the ending part will be handled. This
-is not ideal but:
+they are not yet handled. By considered, I mean that they will at least be
+checked to ensure that they consist only of the characters "ivx", in lowercase.
 
-1. It's unlikely that prelim pages (roman) would require incrementing;
+However, in the unlikely case that an index range begins with roman and ends
+with arabic, the ending part will be handled. This is not ideal but:
+
+1. It's unlikely that prelim pages would require incrementing;
 2. Manually adjusting prelim page numbers should be a snap unless you've got a ridiculously large prelim;
 3. I have no pressing need for that right now.
-
-I wrote this up in a couple of hours using PHP. My first inclination was
-to do it with Python but, as I thought the process through, I kept thinking
-about how I would do it with PHP. As time was short, I simply did it this way.
-I may rewrite this in Python sometime as an exercise.
-
 
 
 ## Example Usage
@@ -98,3 +94,7 @@ while( ($line = fgets($readPointer)) !== false ) {
 ```
 
 Or see [this gist](https://gist.github.com/brianally/67fda7e0ed40f71e5c4a003c7686acf9) for a fuller example.
+
+My first inclination was to do this with Python but, as I thought the process
+through, I kept thinking about how I would do it with PHP. As time was short,
+I simply did it this way. I may rewrite this in Python sometime as an exercise.
