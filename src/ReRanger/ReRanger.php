@@ -206,6 +206,8 @@ class ReRanger {
    * If the range delimiter is, eg. ".."
    * then a range looks like "82..8", or "239..43", etc.
    *
+   * @TODO	shorten this thing
+   *
    * @param   string    $range
    * 
    * @return  string 
@@ -229,7 +231,15 @@ class ReRanger {
     // could be roman numerals from prelim
     if ( !is_numeric($start) ) {
 
+    	if ( !$this->isPrelim($start) ) {
+    		throw new InvalidArgumentException("bad range: ${range}");
+    	}
+
       if ( !is_numeric($end) ) {
+
+	    	if ( !$this->isPrelim($end) ) {
+	    		throw new InvalidArgumentException("bad range: ${range}");
+	    	}
         
         return $start . $this->_range_delimiter . $end;
 
@@ -247,7 +257,6 @@ class ReRanger {
 
     // sanity
     if ( intval($end) <= intval($start) ) {
-    	echo "bad range: ${start} to ${end}";
     	throw new InvalidArgumentException("bad range: ${start} to ${end}");
     }
 
@@ -275,15 +284,22 @@ class ReRanger {
   /**
    * increments a single number
    *
+   * This method will not increment roman numerals,
+   * but will pass them through.
+   *
    * @param		string   $input  
    *                          
    * @return	string
    *
-   * @throws  InvalidArgumentException if the string is not numeric
+   * @throws  InvalidArgumentException if the string is not numeric or roman
    * 
    * @access  public
    */
   public function step($input) {
+
+  	if ( $this->isPrelim($input) ) {
+  		return $input;
+  	}
 
     if ( !is_numeric($input) ) {
       throw new InvalidArgumentException("bad number: ${input}");
@@ -440,6 +456,28 @@ class ReRanger {
   	}
 
   	return implode($this->_series_delimiter, $series);
+  }
+
+
+  /**
+   * checks whether number consists of roman numerals
+   *
+   * This currently does not recognise numbers greater
+   * than 49. If you've got 50+ pages of prelims you have
+   * worse problems than a b0rked index. But do send a
+   * pull request.
+   * 
+   * This also does not check that the number makes sense.
+   * It's only checking whether the string contains these
+   * characters, and ONLY these characters.
+   *
+   * Also, prelim numerals SHALT BE LOWERCASE.
+   * 
+   * @param  string  $num the number, as a string
+   * @return boolean      is, or is not
+   */
+  public function isPrelim($num) {
+  	return preg_match("/^[ivx]+$/", $num) === 1;
   }
 
 }

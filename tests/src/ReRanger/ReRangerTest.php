@@ -81,6 +81,18 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function romanNumeralsProvider() {
+		return [
+			[", ", "--", 1, "i", true],
+			[", ", "--", 1, "v", true],
+			[", ", "--", 1, "x", true],
+			[", ", "--", 1, "xiv", true],
+			[", ", "--", 1, "ibx", false],
+			[", ", "--", 1, "ixv", true],
+			[", ", "--", 1, "XIV", false]
+		];
+	}
+
 	public function badIntProvider() {
 		return [
 			[", ", "--", 8, 1, "foo"],
@@ -209,6 +221,18 @@ class ReRangerTest extends \PHPUnit_Framework_TestCase {
 		$reRanger = new ReRanger($sd, $rd, $inc, $min);
 
 		$this->assertEquals( $expected, $reRanger->splitRange($a, $b) );
+	}
+	
+
+	/**
+	 * @covers	ReRanger::isPrelim
+	 * @dataProvider romanNumeralsProvider
+	 */
+	public function testIsPrelimMatchesRomanNumerals($sd, $rd, $inc, $input, $expected) {
+
+		$reRanger = new ReRanger($sd, $rd, $inc);
+
+		$this->assertSame( $expected, $reRanger->isPrelim($input) );
 	}
 	
 
